@@ -1,0 +1,52 @@
+.backgroundTile :nth-child(2){
+	background-color: black;
+}
+
+.backgroundTile_Dark, .backgroundTile_Light{
+	position: absolute;
+}
+
+.backgroundTile_Dark{
+	background-color: #993300;
+}
+
+.backgroundTile_Light{
+	background-color: #F4F4DC;
+}
+
+.movementTile{
+	box-shadow: 0 0 0 2px orange inset;
+	cursor: pointer;
+	z-index: 1;
+}
+
+.movementTile:hover{
+	box-shadow: 0 0 0 3px orange inset;
+}
+
+.boardDisplay{
+	position: absolute;
+	width: 30%;
+	height: 50%;
+	border: 2px solid black;
+}
+
+.unit{
+	position: absolute;
+	transition: all 0.75s;
+	z-index: 3;
+}
+
+.occupied:hover{
+	box-shadow: 0 0 0 3px orange inset;
+	z-index: 2;
+	cursor: pointer;
+}
+
+.player_1{
+	color: white;
+}
+
+.player_2{
+	color: black;
+}
