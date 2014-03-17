@@ -12,6 +12,8 @@ Viewer.prototype.setupView= setupView;
 //Sets up a new board at given destination.
 function setupView(){
 
+	this.updateTurn();
+
 	var destHeight = this.destination.offsetHeight;
 	var destWidth = this.destination.offsetWidth;
 	//Color of current tile.
@@ -21,16 +23,16 @@ function setupView(){
 			dark = !dark;
 			this.tiles.push(new Array());
 		for(var col = 0; col < this.board.grid[0].length; col++){
-			var h = parseInt(destHeight/this.board.grid.length); //Tile Height
-			var w = parseInt(destWidth/this.board.grid[0].length); //Tile Width
+			var h = 100/this.board.grid.length; //Tile Height in Percent
+			var w = 100/this.board.grid[0].length; //Tile Width in Percent
 			
 			//Create Board Tile
 			var tile = document.createElement("DIV");
 
-			tile.style.height = h+"px";
-			tile.style.width = w+"px";
-			tile.style.bottom = row*h+"px";
-			tile.style.left = col*w+"px";
+			tile.style.height = h+"%";
+			tile.style.width = w+"%";
+			tile.style.bottom = row*h+"%";
+			tile.style.left = col*w+"%";
 			tile.className += " backgroundTile";
 
 			if(dark){
@@ -67,16 +69,16 @@ function createUnits(){
 				}else{
 					unitDisp.className += " player_2";
 				}
-				unitDisp.style.bottom = curTile.style.bottom;
-				unitDisp.style.left = parseInt(curTile.style.left)+15+"px";
+				//Align Unit height and width with tile center.
+				unitDisp.style.bottom = parseFloat(curTile.style.bottom)+(100/this.tiles.length/2.5)+"%";
+				unitDisp.style.left = parseFloat(curTile.style.left)+(100/this.tiles[0].length/2.5)+"%";
 				curUnit.displayElement = unitDisp;
 				this.destination.appendChild(unitDisp);
 
-				var f = function (){ //////////////////////////Need to pass in board.
-					window.game.boards[0].movementPath(this);
-				};
 				//Bind Movement Functions
-				curTile.onclick = f.bind(curUnit);
+				if(window.game.turn == curUnit.owner){
+					curTile.onclick = curUnit.movementPath.bind(curUnit);
+				}
 				curTile.className += " occupied";
 			}
 		}
@@ -117,8 +119,8 @@ function bindMovement(unit, target){
 	
 	var f = function(){
 		//New coordinates as pixels
-		unit.displayElement.style.left = parseInt(destTile.style.left)+15+"px";;
-		unit.displayElement.style.bottom = destTile.style.bottom;
+		unit.displayElement.style.left = parseFloat(destTile.style.left)+(100/this.tiles[0].length/2.5)+"%";
+		unit.displayElement.style.bottom = parseFloat(destTile.style.bottom)+(100/this.tiles.length/2.5)+"%";
 		this.board.move(unit,target);
 		this.resetBindings();
 	};
@@ -143,10 +145,11 @@ function resetBindings(){
 
 			//Re-bind movePath function
 			if(this.board.grid[row][col]){
-				var f = function (){ //////////////////////////Need to pass in board.
-					window.game.boards[0].movementPath(this);
-				};
-				cur.onclick = f.bind(this.board.grid[row][col]);
+				var unit = this.board.grid[row][col];
+
+				if(window.game.turn == unit.owner){
+					cur.onclick = unit.movementPath.bind(unit);
+				}
 				cur.className += " occupied";
 			}
 		}
@@ -159,3 +162,20 @@ function erase(unit){
 	this.destination.removeChild(unit.displayElement);
 	unit.displayElement = null;
 }
+
+Viewer.prototype.updateTurn = function(){
+	var turnDisplay = document.getElementById("turn_display");
+	turnDisplay.innerHTML = "It's Player "+window.game.turn+"'s Turn";
+}
+
+Viewer.prototype.displayGameOver = function(winner){
+	var turnDisplay = document.getElementById("turn_display");
+	var p = document.createElement("p");
+	p.innerHTML = "GAME OVER";
+	var winnerName = document.createElement("p");
+	winnerName.innerHTML = "Player "+winner+" is Victorious!";
+
+	turnDisplay.innerHTML = "";
+	turnDisplay.appendChild(p);
+	turnDisplay.appendChild(winnerName);
+};

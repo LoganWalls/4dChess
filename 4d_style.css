@@ -1,7 +1,3 @@
-.backgroundTile :nth-child(2){
-	background-color: black;
-}
-
 .backgroundTile_Dark, .backgroundTile_Light{
 	position: absolute;
 }
@@ -11,7 +7,7 @@
 }
 
 .backgroundTile_Light{
-	background-color: #F4F4DC;
+	background-color: #E6E6B8;
 }
 
 .movementTile{
@@ -24,11 +20,30 @@
 	box-shadow: 0 0 0 3px orange inset;
 }
 
+#game_area{
+	position: absolute;
+	height: 100%;
+	width: 100%;
+}
+
 .boardDisplay{
 	position: absolute;
-	width: 30%;
-	height: 50%;
-	border: 2px solid black;
+	border: 4px solid black;
+	width: 45%;
+	height: 80%;
+	z-index: 2;
+}
+
+.boardDisplay, .boardDisplay>* , #game_area{
+	padding: 0;
+	margin: 0;
+}
+
+#turn_display{
+	position: absolute;
+	top: 30%;
+	left: 50%;
+	font-size: 2em;
 }
 
 .unit{
