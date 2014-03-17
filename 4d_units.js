@@ -9,7 +9,7 @@ function Unit(owner, board, row, col){
 
 	//The position of the unit within the board.
 	this.position = [row, col];
-	
+
 	//Experience points.
 	this.experience = 0;
 
@@ -76,7 +76,7 @@ function getDirection(index){
 		return [-directionRow,directionCol];
 	}else{
 		throw("Error, invalid unit owner: "+this.owner);
-	}	
+	}
 }
 
 Unit.prototype.movementPath = movementPath;
@@ -238,7 +238,7 @@ Knight.prototype.movementPath = function(){
 
 					//If unit is ally.
 					}else{
-						
+
 					}
 				//If empty.
 				}else{
@@ -316,25 +316,27 @@ Pawn.prototype.movementPath = function(){
 		}
 	}
 
-	//Explore attack tiles.
-	for(var i = 1; i <= 2; i++){
-		var curRow = unitRow+1;
-		var curCol = unitCol;
+	if(!this.firstMove){
+		//Explore attack tiles.
+		for(var i = 1; i <= 2; i++){
+			var curRow = unitRow+1;
+			var curCol = unitCol;
 
-		if(i == 1){
-			curCol += 1;
-		}else{
-			curCol -= 1;
-		}
+			if(i == 1){
+				curCol += 1;
+			}else{
+				curCol -= 1;
+			}
 
-		//If the tile is on the board.
-		if(curCol < gridW && curRow < gridH && curCol >= 0 && curRow >= 0){
-			var curTile = this.board.grid[curRow][curCol];
-			//If there is a unit on the tile.
-			if(curTile){
-				//If the unit is an enemy
-				if(curTile.owner != this.owner){
-					window.game.view.bindMovement(this,[curRow,curCol]);
+			//If the tile is on the board.
+			if(curCol < gridW && curRow < gridH && curCol >= 0 && curRow >= 0){
+				var curTile = this.board.grid[curRow][curCol];
+				//If there is a unit on the tile.
+				if(curTile){
+					//If the unit is an enemy
+					if(curTile.owner != this.owner){
+						window.game.view.bindMovement(this,[curRow,curCol]);
+					}
 				}
 			}
 		}
@@ -343,7 +345,6 @@ Pawn.prototype.movementPath = function(){
 	//Convert mobility array into movement directions.
 	for(var i = 0; i < this.mobility.length; i++){
 		//Maximum movement in the current direction.
-		
 
 		window.game.view.tiles[unitRow][unitCol].onclick = function(){
 			window.game.view.resetBindings();
