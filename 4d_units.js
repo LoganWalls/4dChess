@@ -139,7 +139,7 @@ function King(owner, board, row, col){
 	this.board = board;
 	this.position = [row, col];
 	this.experience = 0;
-	this.sprite = document.createTextNode("K");
+	this.sprite = document.createTextNode("\u265A");
 	this.speed = 1;
 	this.mobility = [1,1,1,1,1,1,1,1];
 }
@@ -151,7 +151,7 @@ function Queen(owner, board, row, col){
 	this.board = board;
 	this.position = [row, col];
 	this.experience = 0;
-	this.sprite = document.createTextNode("Q");
+	this.sprite = document.createTextNode("\u265B");
 	this.speed = 8;
 	this.mobility = [1,1,1,1,1,1,1,1];
 }
@@ -163,7 +163,7 @@ function Bishop(owner, board, row, col){
 	this.board = board;
 	this.position = [row, col];
 	this.experience = 0;
-	this.sprite = document.createTextNode("B");
+	this.sprite = document.createTextNode("\u265D");
 	this.speed = 8;
 	this.mobility = [0,1,0,1,0,1,0,1];
 }
@@ -175,7 +175,7 @@ function Knight(owner, board, row, col){
 	this.board = board;
 	this.position = [row, col];
 	this.experience = 0;
-	this.sprite = document.createTextNode("Kn");
+	this.sprite = document.createTextNode("\u265E");
 	this.speed = 2;
 	this.mobility = [1,0,1,0,1,0,1,0];
 }
@@ -260,7 +260,7 @@ function Rook(owner, board, row, col){
 	this.board = board;
 	this.position = [row, col];
 	this.experience = 0;
-	this.sprite = document.createTextNode("R");
+	this.sprite = document.createTextNode("\u265C");
 	this.speed = 8;
 	this.mobility = [1,0,1,0,1,0,1,0];
 }
@@ -272,7 +272,7 @@ function Pawn(owner, board, row, col){
 	this.board = board;
 	this.position = [row, col];
 	this.experience = 0;
-	this.sprite = document.createTextNode("P");
+	this.sprite = document.createTextNode("\u265F");
 	this.speed = 1;
 	this.mobility = [1,0,0,0,0,0,0,0];
 	this.firstMove = true;

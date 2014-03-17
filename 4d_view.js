@@ -25,7 +25,7 @@ function setupView(){
 		for(var col = 0; col < this.board.grid[0].length; col++){
 			var h = 100/this.board.grid.length; //Tile Height in Percent
 			var w = 100/this.board.grid[0].length; //Tile Width in Percent
-			
+
 			//Create Board Tile
 			var tile = document.createElement("DIV");
 
@@ -70,8 +70,8 @@ function createUnits(){
 					unitDisp.className += " player_2";
 				}
 				//Align Unit height and width with tile center.
-				unitDisp.style.bottom = parseFloat(curTile.style.bottom)+(100/this.tiles.length/2.5)+"%";
-				unitDisp.style.left = parseFloat(curTile.style.left)+(100/this.tiles[0].length/2.5)+"%";
+				unitDisp.style.bottom = parseFloat(curTile.style.bottom)+(100/this.tiles.length/3)+"%";
+				unitDisp.style.left = parseFloat(curTile.style.left)+(100/this.tiles[0].length/3)+"%";
 				curUnit.displayElement = unitDisp;
 				this.destination.appendChild(unitDisp);
 
@@ -82,7 +82,7 @@ function createUnits(){
 				curTile.className += " occupied";
 			}
 		}
-	}	
+	}
 }
 
 Viewer.prototype.gridToPix = gridToPix;
@@ -107,7 +107,7 @@ Viewer.prototype.bindMovement = bindMovement;
 
 //Takes a unit to be moved and a target destination (as an array [row, column]).
 //Binds the appropriate movement function to the destination tile.
-//If an enemy is present it will be 
+//If an enemy is present it will be
 function bindMovement(unit, target){
 	//Unit's position stored as [row, col]
 	var targetRow = target[0];
@@ -116,11 +116,11 @@ function bindMovement(unit, target){
 	//The DOM element for the destination tile.
 	var destTile = this.tiles[targetRow][targetCol];
 	destTile.className += " movementTile";
-	
+
 	var f = function(){
 		//New coordinates as pixels
-		unit.displayElement.style.left = parseFloat(destTile.style.left)+(100/this.tiles[0].length/2.5)+"%";
-		unit.displayElement.style.bottom = parseFloat(destTile.style.bottom)+(100/this.tiles.length/2.5)+"%";
+		unit.displayElement.style.left = parseFloat(destTile.style.left)+(100/this.tiles[0].length/3)+"%";
+		unit.displayElement.style.bottom = parseFloat(destTile.style.bottom)+(100/this.tiles.length/3)+"%";
 		this.board.move(unit,target);
 		this.resetBindings();
 	};

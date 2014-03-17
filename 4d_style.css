@@ -51,6 +51,7 @@
 	transition: all 0.75s;
 	z-index: 3;
 	pointer-events: none;
+	font-size: 3em;
 }
 
 .occupied:hover{
