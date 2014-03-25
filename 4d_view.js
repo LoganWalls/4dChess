@@ -1,30 +1,28 @@
-function Viewer(board, destination){
+function Viewer(){
 	this.tiles = new Array();
-	this.board = board;
-	this.destination = destination;
-
-	this.setupView();
-	this.createUnits();
 }
 
-Viewer.prototype.setupView= setupView;
+Viewer.prototype.initializeBoard= function(board){
+	this.tiles[board.boardId] = new Array();
+	this.setupTiles(board);
+	this.setupUnits(board);
+};
 
-//Sets up a new board at given destination.
-function setupView(){
+//Sets up the tiles for the provided board.
+Viewer.prototype.setupTiles= function (board){
+	var tiles = this.tiles[board.boardId];
 
-	this.updateTurn();
-
-	var destHeight = this.destination.offsetHeight;
-	var destWidth = this.destination.offsetWidth;
+	var destHeight = board.displayDest.offsetHeight;
+	var destWidth = board.displayDest.offsetWidth;
 	//Color of current tile.
 	var dark = false;
 
-	for(var row = 0; row < this.board.grid.length; row++){
+	for(var row = 0; row < board.grid.length; row++){
 			dark = !dark;
-			this.tiles.push(new Array());
-		for(var col = 0; col < this.board.grid[0].length; col++){
-			var h = 100/this.board.grid.length; //Tile Height in Percent
-			var w = 100/this.board.grid[0].length; //Tile Width in Percent
+			tiles.push(new Array());
+		for(var col = 0; col < board.grid[0].length; col++){
+			var h = 100/board.grid.length; //Tile Height in Percent
+			var w = 100/board.grid[0].length; //Tile Width in Percent
 
 			//Create Board Tile
 			var tile = document.createElement("DIV");
@@ -42,22 +40,22 @@ function setupView(){
 				tile.className += "_Light";
 				dark = true;
 			}
-			this.tiles[row][col] = tile;
-			this.destination.appendChild(tile);
+			tiles[row][col] = tile;
+			board.displayDest.appendChild(tile);
 		}
 	}
-}
+};
 
-Viewer.prototype.createUnits= createUnits;
 //Creates DOM elements for all units.
-function createUnits(){
+Viewer.prototype.setupUnits= function (board){
+	var tiles = this.tiles[board.boardId];
 
-	for(var row = 0; row < this.tiles.length; row++){
+	for(var row = 0; row < tiles.length; row++){
 
-		for(var col = 0; col < this.tiles[0].length; col++){
+		for(var col = 0; col < tiles[0].length; col++){
 			//Create unit (if any)
-			var curUnit = this.board.grid[row][col];
-			var curTile = this.tiles[row][col];
+			var curUnit = board.grid[row][col];
+			var curTile = tiles[row][col];
 
 			if(curUnit){
 				var unitDisp = document.createElement("DIV");
@@ -70,71 +68,68 @@ function createUnits(){
 					unitDisp.className += " player_2";
 				}
 				//Align Unit height and width with tile center.
-				unitDisp.style.bottom = parseFloat(curTile.style.bottom)+(100/this.tiles.length/3)+"%";
-				unitDisp.style.left = parseFloat(curTile.style.left)+(100/this.tiles[0].length/3)+"%";
+				unitDisp.style.bottom = parseFloat(curTile.style.bottom)+(100/tiles.length/4)+"%";
+				unitDisp.style.left = parseFloat(curTile.style.left)+(100/tiles[0].length/4)+"%";
 				curUnit.displayElement = unitDisp;
-				this.destination.appendChild(unitDisp);
+				board.displayDest.appendChild(unitDisp);
 
 				//Bind Movement Functions
-				if(window.game.turn == curUnit.owner){
+				if(window.game.turn == curUnit.owner && window.game.activeBoard == curUnit.board.boardId){
 					curTile.onclick = curUnit.movementPath.bind(curUnit);
 				}
 				curTile.className += " occupied";
 			}
 		}
 	}
-}
+};
 
-Viewer.prototype.gridToPix = gridToPix;
 
 //Coordinates is an array of two elements [x,y] the desired grid coordinates.
 //Returns an array of integer pixel values [x,y].
 //Converts grid coordinates to corresponding pixel values.
 //Pixel values relative to the Viewer's 'destination'.
-function gridToPix(coordinates){
+Viewer.prototype.gridToPix = function (coordinates){
 
 	var x = coordinates[0];
 	var y = coordinates[1];
-	var destHeight = destination.offsetHeight;
-	var destWidth = destination.offsetWidth;
+	var destHeight = board.displayDest.offsetHeight;
+	var destWidth = board.displayDest.offsetWidth;
 	var h = parseInt(destHeight/this.grid.length); //Tile Height
 	var w = parseInt(destWidth/this.grid[0].length); //Tile Width
 
 	return [x*w,y*h];
-}
-
-Viewer.prototype.bindMovement = bindMovement;
+};
 
 //Takes a unit to be moved and a target destination (as an array [row, column]).
-//Binds the appropriate movement function to the destination tile.
-//If an enemy is present it will be
-function bindMovement(unit, target){
+//Binds movement to a given target destnation.
+//Unit is the unit to be moved.
+//Target is a 2 element array of the row and column of the target tile for the movement.
+//moveFunc is the function to handle the movement.
+Viewer.prototype.bindMovement = function (unit, boardId, target, moveFunc){
+
+	var tiles = this.tiles[boardId];
+
 	//Unit's position stored as [row, col]
 	var targetRow = target[0];
 	var targetCol = target[1];
 
 	//The DOM element for the destination tile.
-	var destTile = this.tiles[targetRow][targetCol];
+	var destTile = tiles[targetRow][targetCol];
 	destTile.className += " movementTile";
 
-	var f = function(){
-		//New coordinates as pixels
-		unit.displayElement.style.left = parseFloat(destTile.style.left)+(100/this.tiles[0].length/3)+"%";
-		unit.displayElement.style.bottom = parseFloat(destTile.style.bottom)+(100/this.tiles.length/3)+"%";
-		this.board.move(unit,target);
-		this.resetBindings();
+	destTile.onclick = function(){
+		moveFunc.bind(unit)(target);
 	};
+};
 
-	destTile.onclick = f.bind(this);
-}
+//Resets and updates the controls on all tiles for the given board.
+//(Based on the current turn and active board for the game.)
+Viewer.prototype.updateBindings = function (board){
+	var tiles = this.tiles[board.boardId];
 
-Viewer.prototype.resetBindings = resetBindings;
-//Resets the controls on all tiles.
-function resetBindings(){
-
-	for(var row = 0; row < this.tiles.length; row++){
-		for(var col = 0; col < this.tiles[0].length; col++){
-			var cur = this.tiles[row][col];
+	for(var row = 0; row < tiles.length; row++){
+		for(var col = 0; col < tiles[0].length; col++){
+			var cur = tiles[row][col];
 
 			//Unbind click functions.
 			cur.onclick = null;
@@ -144,29 +139,43 @@ function resetBindings(){
 			cur.className = cur.className.replace(/(?:^|\s)occupied(?!\S)/g,'');
 
 			//Re-bind movePath function
-			if(this.board.grid[row][col]){
-				var unit = this.board.grid[row][col];
+			if(board.grid[row][col]){
+				var unit = board.grid[row][col];
 
-				if(window.game.turn == unit.owner){
+				if(window.game.turn == unit.owner && window.game.activeBoard == unit.board.boardId){
 					cur.onclick = unit.movementPath.bind(unit);
 				}
 				cur.className += " occupied";
 			}
 		}
 	}
+};
+
+Viewer.prototype.bindCancelCommand = function(unit){
+	
+	var tiles = this.tiles[unit.board.boardId];
+	var reset = function(){
+		this.updateBindings(unit.board);
+	};
+	//Clicking on the unit again cancels to the movement.
+	tiles[unit.position[0]][unit.position[1]].onclick = reset.bind(this);
 }
 
-Viewer.prototype.erase = erase;
+Viewer.prototype.updateUnitBoard = function (unit){
+	unit.displayElement.parentNode.removeChild(unit.displayElement);
+	unit.board.displayDest.appendChild(unit.displayElement);
+};
+
 //Erases a unit from the DOM.
-function erase(unit){
-	this.destination.removeChild(unit.displayElement);
+Viewer.prototype.erase = function (unit){
+	unit.board.displayDest.removeChild(unit.displayElement);
 	unit.displayElement = null;
-}
+};
 
 Viewer.prototype.updateTurn = function(){
 	var turnDisplay = document.getElementById("turn_display");
 	turnDisplay.innerHTML = "It's Player "+window.game.turn+"'s Turn";
-}
+};
 
 Viewer.prototype.displayGameOver = function(winner){
 	var turnDisplay = document.getElementById("turn_display");

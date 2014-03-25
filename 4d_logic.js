@@ -3,17 +3,20 @@ window.onload = function(){
   var disp = document.getElementById("game_area");
   window.game = new Game(disp);
   window.game.gameSetup(2);
-  //Bindings go here.
-
-  //Test code
-
 };
 
 //Game object to encapsulate the game state.
 function Game(disp){
 	this.disp = disp;
-	this.turn = 0;
+	this.turn = null;
+
+	//Controls which board a move can be made on.
+	this.activeBoardIndex = null;
+
+	//Holds the game boards.
 	this.boards = new Array();
+
+	//Holds dead units.
 	this.graveyard = new Array();
 }
 
@@ -27,36 +30,53 @@ Game.prototype.gameOver = function(winner){
 
 //Advances the game turn.
 Game.prototype.nextTurn = function(){
-	if(this.turn == 1){
-		this.turn = 2;
-	}else if(this.turn == 2){
-		this.turn = 1;
+	
+	if(this.activeBoard == 1){
+		this.activeBoard = 2;
+		
+	}else if(this.activeBoard == 2){
+		if(this.turn == 1){
+			this.turn = 2;
+		}else if(this.turn == 2){
+			this.turn = 1;
+		}
+		this.activeBoard = 1;
+
+	}else{
+		throw("Error, invalid active board: "+this.activeBoard);
 	}
+
+	//Update bindings on all boards
+	for(var i = 0; i < this.boards.length; i++){
+			this.view.updateBindings(this.boards[i]);
+		}
 	this.view.updateTurn();
 };
 
-Game.prototype.gameSetup = gameSetup;
+//Setsup a new game with the given number of boards.
+Game.prototype.gameSetup = function (boards){
 
-//Setsup a new game with the given number of players and baords.
-function gameSetup(boards){
+	this.turn = 1;
+	this.activeBoard = 1;
+	this.view = new Viewer();
+	this.view.updateTurn();
 
 	for(var i = 0; i < boards; i++){
-		var b = new Board(i+1, window.game.view);
+		var disp = document.getElementById("board_"+(i+1));
+		var b = new Board(disp, i+1);
 		b.populate();
-		this.boards.push(b);
+		this.boards[i] = b;
+		this.view.initializeBoard(b);
 	}
-	this.turn = 1;
-	var d = document.getElementById("active_board");
-	window.game.view = new Viewer(this.boards[0], d);
-}
+};
 
 //A chess board, controls game logic.
-function Board(boardId, Viewer){
+function Board(destination, id){
 	//The id to keep track of all game boards(1 based index);
-	this.boardId = boardId;
+	this.boardId = id;
 
 	//The Viewer Object which handles rendering this board:
-	this.view = Viewer;
+	this.displayDest = destination;
 	//Where all of the pieces 'live'.
 	this.grid = new Array(8);
 
@@ -128,8 +148,8 @@ function populate(){
 	}
 }
 
-Board.prototype.move = move;
-function move(unit, target){
+Board.prototype.moveUnit = moveUnit;
+function moveUnit(unit, target){
 
 	var targetRow = target[0];
 	var targetCol = target[1];
@@ -147,7 +167,7 @@ function move(unit, target){
 	}
 
 	//Clear unit's current grid location and set new location in grid and unit.
-	this.grid[unit.position[0]][unit.position[1]] = null;
+	this.grid[unit.position[0]][unit.position[1]] = '';
 	this.grid[targetRow][targetCol] = unit;
 	unit.position = [targetRow, targetCol];
 	

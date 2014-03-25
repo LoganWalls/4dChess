@@ -84,6 +84,7 @@ Unit.prototype.movementPath = movementPath;
 //Takes a unit, colors the posibile movement tiles for that unit
 //and binds the appropriate movement functions to each tile.
 function movementPath(){
+
 	//Dimensions of the board grid.
 	var gridW = this.board.grid.length;
 	var gridH = this.board.grid[0].length;
@@ -112,7 +113,7 @@ function movementPath(){
 				if(curTile){
 					//If the unit is an enemy
 					if(curTile.owner != this.owner){
-						window.game.view.bindMovement(this,[curRow,curCol]);
+						window.game.view.bindMovement(this,this.board.boardId,[curRow,curCol],this.move);
 						break;
 
 					//If unit is ally.
@@ -121,15 +122,68 @@ function movementPath(){
 					}
 				//If empty.
 				}else{
-					window.game.view.bindMovement(this,[curRow,curCol]);
+					window.game.view.bindMovement(this,this.board.boardId,[curRow,curCol],this.move);
 				}
 			}
 		}
-		window.game.view.tiles[unitRow][unitCol].onclick = function(){
-			window.game.view.resetBindings();
-		};
 	}
+	//Binds command to jump between boards if the unit is able.
+	this.warpPath();
+	//Binds the command to cancel movement to the unit's current tile.
+	game.view.bindCancelCommand(this);
 }
+
+Unit.prototype.warpPath = function(){
+	console.log(this);
+	var destBoardId = null;
+	if(this.experience >= 2){
+		if(this.board.boardId == 1){
+			destBoardId = 2;
+		}else if(this.board.boardId == 2){
+			destBoardId = 1;
+		}else{
+			throw("Error, Invalid destination board ID: "+destBoardId);
+		}
+		window.game.view.bindMovement(this, destBoardId, this.position, this.warp);
+	}
+};
+
+//Target is the target tile to move to.
+Unit.prototype.move = function(target){
+
+	var tiles = window.game.view.tiles[this.board.boardId];
+	var destTile = tiles[target[0]][target[1]];
+
+	this.displayElement.style.left = parseFloat(destTile.style.left)+(100/tiles[0].length/3)+"%";
+	this.displayElement.style.bottom = parseFloat(destTile.style.bottom)+(100/tiles.length/3)+"%";
+	this.board.moveUnit(this,target);
+};
+
+Unit.prototype.warp = function(target){
+	
+	var destBoardId = null;
+	if(this.experience >= 2){
+		if(this.board.boardId == 1){
+			destBoardId = 2;
+		}else if(this.board.boardId == 2){
+			destBoardId = 1;
+		}else{
+			throw("Error, Invalid destination board: "+destBoardId);
+		}
+		this.board.grid[this.position[0]][this.position[1]] = '';
+		console.log("New Board = "+destBoardId);
+		this.board = window.game.boards[destBoardId-1];
+		window.game.view.updateUnitBoard(this);
+		var tiles = window.game.view.tiles[destBoardId];
+		var destTile = tiles[this.position[0]][this.position[1]];
+		
+		this.displayElement.style.left = parseFloat(destTile.style.left)+(100/tiles[0].length/3)+"%";
+		this.displayElement.style.bottom = parseFloat(destTile.style.bottom)+(100/tiles.length/3)+"%";
+
+		this.board.moveUnit(this, this.position);
+		this.experience -= 1;
+	}
+};
 
 King.prototype = new Unit();
 King.prototype.constructor= King;
@@ -234,7 +288,7 @@ Knight.prototype.movementPath = function(){
 				if(orthTile){
 					//If the unit is an enemy
 					if(orthTile.owner != this.owner){
-						window.game.view.bindMovement(this,[orthRow,orthCol]);
+						window.game.view.bindMovement(this,this.board.boardId,[orthRow,orthCol],this.move);
 
 					//If unit is ally.
 					}else{
@@ -242,15 +296,13 @@ Knight.prototype.movementPath = function(){
 					}
 				//If empty.
 				}else{
-					window.game.view.bindMovement(this,[orthRow,orthCol]);
+					window.game.view.bindMovement(this,this.board.boardId,[orthRow,orthCol],this.move);
 				}
 			}
 		}
-		//Clicking on the unit again cancels to the movement.
-		window.game.view.tiles[this.position[0]][this.position[1]].onclick = function(){
-			window.game.view.resetBindings();
-		};
 	}
+	this.warpPath();
+	game.view.bindCancelCommand(this);
 };
 
 Rook.prototype = new Unit();
@@ -311,7 +363,7 @@ Pawn.prototype.movementPath = function(){
 				break;
 			//If empty.
 			}else{
-				window.game.view.bindMovement(this,[curRow,curCol]);
+				window.game.view.bindMovement(this,this.board.boardId,[curRow,curCol],this.move);
 			}
 		}
 	}
@@ -335,19 +387,12 @@ Pawn.prototype.movementPath = function(){
 				if(curTile){
 					//If the unit is an enemy
 					if(curTile.owner != this.owner){
-						window.game.view.bindMovement(this,[curRow,curCol]);
+						window.game.view.bindMovement(this,this.board.boardId,[curRow,curCol],this.move);
 					}
 				}
 			}
 		}
 	}
-
-	//Convert mobility array into movement directions.
-	for(var i = 0; i < this.mobility.length; i++){
-		//Maximum movement in the current direction.
-
-		window.game.view.tiles[unitRow][unitCol].onclick = function(){
-			window.game.view.resetBindings();
-		};
-	}
+	this.warpPath();
+	game.view.bindCancelCommand(this);
 };
