@@ -183,7 +183,8 @@ Unit.prototype.warp = function(target){
 	  unitDisp.style.left = parseFloat(destTile.style.left)+(parseFloat(destTile.style.width)/2)-((unitDisp.offsetWidth/2)/(unitDisp.parentNode.offsetWidth)*100)+"%";
 
 		this.board.moveUnit(this, this.position);
-		this.experience -= 1;
+		this.experience -= 2;
+		window.game.view.updateAura(this);
 	}
 };
 

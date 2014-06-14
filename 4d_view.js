@@ -162,6 +162,7 @@ Viewer.prototype.bindCancelCommand = function(unit){
 	tiles[unit.position[0]][unit.position[1]].onclick = reset.bind(this);
 }
 
+//Update the board assigned to the unit.
 Viewer.prototype.updateUnitBoard = function (unit){
 	unit.displayElement.parentNode.removeChild(unit.displayElement);
 	unit.board.displayDest.appendChild(unit.displayElement);
@@ -173,6 +174,7 @@ Viewer.prototype.erase = function (unit){
 	unit.displayElement = null;
 };
 
+//Update the screen to reflect turn change.
 Viewer.prototype.updateTurn = function(activeBoard){
 	var turnDisplay = document.getElementById("turn_display");
 	turnDisplay.innerHTML = "It's Player "+window.game.turn+"'s Turn";
@@ -188,6 +190,7 @@ Viewer.prototype.updateTurn = function(activeBoard){
 	}
 };
 
+//Display Gameover Screen
 Viewer.prototype.displayGameOver = function(winner){
 	var turnDisplay = document.getElementById("turn_display");
 	var p = document.createElement("p");
@@ -203,3 +206,12 @@ Viewer.prototype.displayGameOver = function(winner){
 	turnDisplay.appendChild(p);
 	turnDisplay.appendChild(winnerName);
 };
+
+//Make unit glow if it can warp.
+Viewer.prototype.updateAura = function(unit){
+	if(unit.experience >= 2){
+		unit.displayElement.className += " canWarp";
+	}else{
+		unit.displayElement.className = unit.displayElement.className.replace(/(?:^|\s)canWarp(?!\S)/g,'');
+	}
+}

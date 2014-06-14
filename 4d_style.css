@@ -45,6 +45,7 @@
 	margin-top: 0.2em;
 	display: inline-block;
 	text-align: center;
+	width: 24em;
 }
 
 #intro_box li{
@@ -101,10 +102,10 @@
 .player_1{
 	color: white;
 	text-shadow:
-   -1px -1px 0 #000,
-   1px -1px 0 #000,
-   -1px 1px 0 #000,
-   1px 1px 0 #000;
+	   -1px -1px 0 #000,
+	   1px -1px 0 #000,
+	   -1px 1px 0 #000,
+	   1px 1px 0 #000;
 }
 
 .player_2{
@@ -113,4 +114,12 @@
 
 .activeBoard{
 	opacity: 1.0;
+}
+
+.canWarp{
+	text-shadow:
+	   -1px -1px 1px #ff0000,
+	   1px -1px 1px #ff0000,
+	   -1px 1px 1px #ff0000,
+	   1px 1px 1px #ff0000;
 }

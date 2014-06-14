@@ -166,6 +166,7 @@ function moveUnit(unit, target){
 	var enemy = this.grid[targetRow][targetCol];
 	if(enemy){
 		unit.experience++;
+		window.game.view.updateAura(unit);
 		window.game.view.erase(enemy);
 		window.game.graveyard.push(enemy);
 	}
