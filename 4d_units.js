@@ -94,7 +94,7 @@ function movementPath(){
 	var unitRow = this.position[0];
 	var unitCol = this.position[1];
 
-	//Conver mobility array into movement directions.
+	//Convert mobility array into movement directions.
 	for(var i = 0; i < this.mobility.length; i++){
 		//Maximum movement in the current direction.
 		var direction = this.getDirection(i);
@@ -371,9 +371,14 @@ Pawn.prototype.movementPath = function(){
 	}
 
 	if(!this.firstMove){
+		//Handles white vs. black direction change.
+		var attackDir = 1;
+		if(this.owner == 2){
+			attackDir *= -1;
+		}
 		//Explore attack tiles.
 		for(var i = 1; i <= 2; i++){
-			var curRow = unitRow+1;
+			var curRow = unitRow+attackDir;
 			var curCol = unitCol;
 
 			if(i == 1){

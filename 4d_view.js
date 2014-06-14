@@ -194,7 +194,11 @@ Viewer.prototype.displayGameOver = function(winner){
 	p.innerHTML = "GAME OVER";
 	var winnerName = document.createElement("p");
 	winnerName.innerHTML = "Player "+winner+" is Victorious!";
-
+	//Fade all boards
+	for(var i = 0; i < window.game.boards.length; i++){
+		curBoard = window.game.boards[i];
+		curBoard.displayDest.className = curBoard.displayDest.className.replace(/(?:^|\s)activeBoard(?!\S)/g,'');
+	}
 	turnDisplay.innerHTML = "";
 	turnDisplay.appendChild(p);
 	turnDisplay.appendChild(winnerName);

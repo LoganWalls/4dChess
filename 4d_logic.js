@@ -59,7 +59,7 @@ Game.prototype.gameSetup = function (boards){
 	this.turn = 1;
 	this.activeBoard = 1;
 	this.view = new Viewer();
-	this.view.updateTurn(this.activeBoard);
+	//
 
 	for(var i = 0; i < boards; i++){
 		var disp = document.getElementById("board_"+(i+1));
@@ -67,6 +67,10 @@ Game.prototype.gameSetup = function (boards){
 		b.populate();
 		this.boards[i] = b;
 		this.view.initializeBoard(b);
+	}
+	document.getElementById("start_button").onclick = function(){
+		document.getElementById("intro_box").style.display = "none";
+		window.game.view.updateTurn(window.game.activeBoard);
 	}
 };
 
@@ -171,16 +175,13 @@ function moveUnit(unit, target){
 	this.grid[targetRow][targetCol] = unit;
 	unit.position = [targetRow, targetCol];
 
-	window.setTimeout(function(enemy){
-		if(enemy){
-			if(enemy.constructor == King){
-				window.game.gameOver(unit.owner);
-			}else{
-				window.game.nextTurn();
-			}
+	if(enemy){
+		if(enemy.constructor == King){
+			window.game.gameOver(unit.owner);
 		}else{
-				window.game.nextTurn();
-			}
-	},800);
-
+			window.setTimeout(function(){window.game.nextTurn();}, 800);
+		}
+	}else{
+			window.setTimeout(function(){window.game.nextTurn();}, 800);
+		}
 }

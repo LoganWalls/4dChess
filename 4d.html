@@ -17,7 +17,28 @@
   <body>
 
     <div id="game_area">
-    	<div id="board_1" class="boardDisplay activeBoard"></div>
+      <div id="intro_box">
+        <h1>Welcome to 2x2 Chess</h1>
+        <p>
+          <h2>The rules are as follows:</h2>
+          <ol>
+            <li>This is a two player game.</li>
+            <li>You will play on both boards simultaneously.</li>
+            <li>There is no 'check' warning, be vigilant.</li>
+            <li>If you lose <em>either</em> king you lose the game.</li>
+          </ol>
+        </p>
+        <p>
+          <h2>Warping</h2>
+          <ol>
+            <li>When a piece captures another piece, it gains a point.</li>
+            <li>When a piece has 2 or more points, it may 'warp' to the opposite board as a move.<br/>(To warp, click on the piece's tile on the opposite board.)</li>
+            <li>Any piece occupying a space will be captured when another piece warps to it.</li>
+          </ol>
+        </p>
+        <button id="start_button">I'm ready</button>
+      </div>
+    	<div id="board_1" class="boardDisplay"></div>
       <div id="board_2" class="boardDisplay"></div>
       <div id="turn_display"></div>
     </div>
