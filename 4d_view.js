@@ -67,11 +67,12 @@ Viewer.prototype.setupUnits= function (board){
 				}else{
 					unitDisp.className += " player_2";
 				}
-				//Align Unit height and width with tile center.
-				unitDisp.style.bottom = parseFloat(curTile.style.bottom)+(100/tiles.length/4)+"%";
-				unitDisp.style.left = parseFloat(curTile.style.left)+(100/tiles[0].length/4)+"%";
 				curUnit.displayElement = unitDisp;
 				board.displayDest.appendChild(unitDisp);
+
+				//Align Unit height and width with tile center.
+				unitDisp.style.bottom = parseFloat(curTile.style.bottom)+(parseFloat(curTile.style.height)/2)-((unitDisp.offsetHeight/2)/(unitDisp.parentNode.offsetHeight)*100)+"%";
+				unitDisp.style.left = parseFloat(curTile.style.left)+(parseFloat(curTile.style.width)/2)-((unitDisp.offsetWidth/2)/(unitDisp.parentNode.offsetWidth)*100)+"%";
 
 				//Bind Movement Functions
 				if(window.game.turn == curUnit.owner && window.game.activeBoard == curUnit.board.boardId){
@@ -152,7 +153,7 @@ Viewer.prototype.updateBindings = function (board){
 };
 
 Viewer.prototype.bindCancelCommand = function(unit){
-	
+
 	var tiles = this.tiles[unit.board.boardId];
 	var reset = function(){
 		this.updateBindings(unit.board);
@@ -172,9 +173,19 @@ Viewer.prototype.erase = function (unit){
 	unit.displayElement = null;
 };
 
-Viewer.prototype.updateTurn = function(){
+Viewer.prototype.updateTurn = function(activeBoard){
 	var turnDisplay = document.getElementById("turn_display");
 	turnDisplay.innerHTML = "It's Player "+window.game.turn+"'s Turn";
+
+	//Fade non-active boards.
+	for(var i = 0; i < window.game.boards.length; i++){
+		curBoard = window.game.boards[i];
+		if(curBoard.boardId == activeBoard){
+			curBoard.displayDest.className += " activeBoard";
+		}else{
+			curBoard.displayDest.className = curBoard.displayDest.className.replace(/(?:^|\s)activeBoard(?!\S)/g,'');
+		}
+	}
 };
 
 Viewer.prototype.displayGameOver = function(winner){

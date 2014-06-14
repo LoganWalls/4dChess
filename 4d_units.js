@@ -134,7 +134,6 @@ function movementPath(){
 }
 
 Unit.prototype.warpPath = function(){
-	console.log(this);
 	var destBoardId = null;
 	if(this.experience >= 2){
 		if(this.board.boardId == 1){
@@ -154,13 +153,15 @@ Unit.prototype.move = function(target){
 	var tiles = window.game.view.tiles[this.board.boardId];
 	var destTile = tiles[target[0]][target[1]];
 
-	this.displayElement.style.left = parseFloat(destTile.style.left)+(100/tiles[0].length/3)+"%";
-	this.displayElement.style.bottom = parseFloat(destTile.style.bottom)+(100/tiles.length/3)+"%";
+	//Align Unit height and width with tile center.
+	unitDisp = this.displayElement;
+	unitDisp.style.bottom = parseFloat(destTile.style.bottom)+(parseFloat(destTile.style.height)/2)-((unitDisp.offsetHeight/2)/(unitDisp.parentNode.offsetHeight)*100)+"%";
+	unitDisp.style.left = parseFloat(destTile.style.left)+(parseFloat(destTile.style.width)/2)-((unitDisp.offsetWidth/2)/(unitDisp.parentNode.offsetWidth)*100)+"%";
 	this.board.moveUnit(this,target);
 };
 
 Unit.prototype.warp = function(target){
-	
+
 	var destBoardId = null;
 	if(this.experience >= 2){
 		if(this.board.boardId == 1){
@@ -176,9 +177,10 @@ Unit.prototype.warp = function(target){
 		window.game.view.updateUnitBoard(this);
 		var tiles = window.game.view.tiles[destBoardId];
 		var destTile = tiles[this.position[0]][this.position[1]];
-		
-		this.displayElement.style.left = parseFloat(destTile.style.left)+(100/tiles[0].length/3)+"%";
-		this.displayElement.style.bottom = parseFloat(destTile.style.bottom)+(100/tiles.length/3)+"%";
+
+    unitDisp = this.displayElement;
+	  unitDisp.style.bottom = parseFloat(destTile.style.bottom)+(parseFloat(destTile.style.height)/2)-((unitDisp.offsetHeight/2)/(unitDisp.parentNode.offsetHeight)*100)+"%";
+	  unitDisp.style.left = parseFloat(destTile.style.left)+(parseFloat(destTile.style.width)/2)-((unitDisp.offsetWidth/2)/(unitDisp.parentNode.offsetWidth)*100)+"%";
 
 		this.board.moveUnit(this, this.position);
 		this.experience -= 1;

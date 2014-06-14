@@ -30,10 +30,10 @@ Game.prototype.gameOver = function(winner){
 
 //Advances the game turn.
 Game.prototype.nextTurn = function(){
-	
+
 	if(this.activeBoard == 1){
 		this.activeBoard = 2;
-		
+
 	}else if(this.activeBoard == 2){
 		if(this.turn == 1){
 			this.turn = 2;
@@ -50,7 +50,7 @@ Game.prototype.nextTurn = function(){
 	for(var i = 0; i < this.boards.length; i++){
 			this.view.updateBindings(this.boards[i]);
 		}
-	this.view.updateTurn();
+	this.view.updateTurn(this.activeBoard);
 };
 
 //Setsup a new game with the given number of boards.
@@ -59,7 +59,7 @@ Game.prototype.gameSetup = function (boards){
 	this.turn = 1;
 	this.activeBoard = 1;
 	this.view = new Viewer();
-	this.view.updateTurn();
+	this.view.updateTurn(this.activeBoard);
 
 	for(var i = 0; i < boards; i++){
 		var disp = document.getElementById("board_"+(i+1));
@@ -170,14 +170,17 @@ function moveUnit(unit, target){
 	this.grid[unit.position[0]][unit.position[1]] = '';
 	this.grid[targetRow][targetCol] = unit;
 	unit.position = [targetRow, targetCol];
-	
-	if(enemy){
-		if(enemy.constructor == King){
-			window.game.gameOver(unit.owner);
+
+	window.setTimeout(function(enemy){
+		if(enemy){
+			if(enemy.constructor == King){
+				window.game.gameOver(unit.owner);
+			}else{
+				window.game.nextTurn();
+			}
 		}else{
-			window.game.nextTurn();
-		}
-	}else{
-			window.game.nextTurn();
-		}
+				window.game.nextTurn();
+			}
+	},800);
+
 }
