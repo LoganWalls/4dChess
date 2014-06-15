@@ -371,36 +371,34 @@ Pawn.prototype.movementPath = function(){
 		}
 	}
 
-	//if(!this.firstMove){
-		//Handles white vs. black direction change.
-		var attackDir = 1;
-		if(this.owner == 2){
-			attackDir *= -1;
+	//Handles white vs. black direction change.
+	var attackDir = 1;
+	if(this.owner == 2){
+		attackDir *= -1;
+	}
+	//Explore attack tiles.
+	for(var i = 1; i <= 2; i++){
+		var curRow = unitRow+attackDir;
+		var curCol = unitCol;
+
+		if(i == 1){
+			curCol += 1;
+		}else{
+			curCol -= 1;
 		}
-		//Explore attack tiles.
-		for(var i = 1; i <= 2; i++){
-			var curRow = unitRow+attackDir;
-			var curCol = unitCol;
 
-			if(i == 1){
-				curCol += 1;
-			}else{
-				curCol -= 1;
-			}
-
-			//If the tile is on the board.
-			if(curCol < gridW && curRow < gridH && curCol >= 0 && curRow >= 0){
-				var curTile = this.board.grid[curRow][curCol];
-				//If there is a unit on the tile.
-				if(curTile){
-					//If the unit is an enemy
-					if(curTile.owner != this.owner){
-						window.game.view.bindMovement(this,this.board.boardId,[curRow,curCol],this.move);
-					}
+		//If the tile is on the board.
+		if(curCol < gridW && curRow < gridH && curCol >= 0 && curRow >= 0){
+			var curTile = this.board.grid[curRow][curCol];
+			//If there is a unit on the tile.
+			if(curTile){
+				//If the unit is an enemy
+				if(curTile.owner != this.owner){
+					window.game.view.bindMovement(this,this.board.boardId,[curRow,curCol],this.move);
 				}
 			}
 		}
-	//}
+	}
 	this.warpPath();
 	game.view.bindCancelCommand(this);
 };
