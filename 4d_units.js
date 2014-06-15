@@ -371,7 +371,7 @@ Pawn.prototype.movementPath = function(){
 		}
 	}
 
-	if(!this.firstMove){
+	//if(!this.firstMove){
 		//Handles white vs. black direction change.
 		var attackDir = 1;
 		if(this.owner == 2){
@@ -400,7 +400,7 @@ Pawn.prototype.movementPath = function(){
 				}
 			}
 		}
-	}
+	//}
 	this.warpPath();
 	game.view.bindCancelCommand(this);
 };
