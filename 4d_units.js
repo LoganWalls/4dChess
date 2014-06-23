@@ -155,9 +155,9 @@ Unit.prototype.move = function(target){
 
 	//Align Unit height and width with tile center.
 	unitDisp = this.displayElement;
+	this.board.moveUnit(this,target);
 	unitDisp.style.bottom = parseFloat(destTile.style.bottom)+(parseFloat(destTile.style.height)/2)-((unitDisp.offsetHeight/2)/(unitDisp.parentNode.offsetHeight)*100)+"%";
 	unitDisp.style.left = parseFloat(destTile.style.left)+(parseFloat(destTile.style.width)/2)-((unitDisp.offsetWidth/2)/(unitDisp.parentNode.offsetWidth)*100)+"%";
-	this.board.moveUnit(this,target);
 };
 
 Unit.prototype.warp = function(target){

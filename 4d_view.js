@@ -175,7 +175,8 @@ Viewer.prototype.erase = function (unit){
 };
 
 //Update the screen to reflect turn change.
-Viewer.prototype.updateTurn = function(activeBoard){
+Viewer.prototype.updateTurn = function(){
+	var activeBoard = window.game.activeBoard;
 	var turnDisplay = document.getElementById("turn_display");
 	turnDisplay.innerHTML = "It's Player "+window.game.turn+"'s Turn";
 

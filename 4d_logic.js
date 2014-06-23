@@ -50,7 +50,7 @@ Game.prototype.nextTurn = function(){
 	for(var i = 0; i < this.boards.length; i++){
 			this.view.updateBindings(this.boards[i]);
 		}
-	this.view.updateTurn(this.activeBoard);
+	window.setTimeout(function(){window.game.view.updateTurn();}, 800);
 };
 
 //Setsup a new game with the given number of boards.
@@ -70,7 +70,7 @@ Game.prototype.gameSetup = function (boards){
 	}
 	document.getElementById("start_button").onclick = function(){
 		document.getElementById("intro_box").style.display = "none";
-		window.game.view.updateTurn(window.game.activeBoard);
+		window.game.view.updateTurn();
 	}
 };
 
@@ -180,9 +180,9 @@ function moveUnit(unit, target){
 		if(enemy.constructor == King){
 			window.game.gameOver(unit.owner);
 		}else{
-			window.setTimeout(function(){window.game.nextTurn();}, 800);
+			window.game.nextTurn();
 		}
 	}else{
-			window.setTimeout(function(){window.game.nextTurn();}, 800);
+			window.game.nextTurn();
 		}
 }
