@@ -188,6 +188,33 @@ Unit.prototype.warp = function(target){
 	}
 };
 
+//Promotes this unit to the unit defined in the string 'promotion'.
+Unit.prototype.promote = function(promotion){
+	
+	//Acceptable unit names for safety (since we're calling a function based on the value).
+	var unitNames = ["King","Queen","Bishop","Knight","Rook"];
+	if(unitNames.indexOf(promotion)){
+
+		//Create new unit and transfer attributes.
+		var row = this.position[0];
+		var col = this.position[1];
+
+		var promoted = new window[promotion](this.owner,this.board,row,col);
+		promoted.experience = this.experience;
+
+
+		//Overwrite this unit on the board.
+		this.board.grid[row][col] = promoted;
+
+		//Update Visuals.
+		window.game.view.erase(this);
+		window.game.view.setupUnitDisplay(promoted);
+
+	}else{
+		console.log("Error: invalid promotion name: "+promotion);
+	}
+}
+
 King.prototype = new Unit();
 King.prototype.constructor= King;
 function King(owner, board, row, col){

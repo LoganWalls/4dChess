@@ -176,12 +176,21 @@ function moveUnit(unit, target){
 	this.grid[targetRow][targetCol] = unit;
 	unit.position = [targetRow, targetCol];
 
-	if(enemy){
-		if(enemy.constructor == King){
-			window.game.gameOver(unit.owner);
+	//End the game if killed unit was a King.
+	if(enemy && enemy.constructor == King){
+		window.game.gameOver(unit.owner);
+
+	//Handle promotion if needed.
+	}else if(unit.constructor == Pawn){
+		if((unit.owner == 1 && targetRow == 7)||(unit.owner == 2 && targetRow == 0)){
+			console.log('ding')
+			game.view.promotionMenu(unit);
+
 		}else{
 			window.game.nextTurn();
 		}
+		
+	//Otherwise just advance the turn.	
 	}else{
 			window.game.nextTurn();
 		}

@@ -48,41 +48,52 @@ Viewer.prototype.setupTiles= function (board){
 
 //Creates DOM elements for all units.
 Viewer.prototype.setupUnits= function (board){
-	var tiles = this.tiles[board.boardId];
 
-	for(var row = 0; row < tiles.length; row++){
+	for(var row = 0; row < board.grid.length; row++){
 
-		for(var col = 0; col < tiles[0].length; col++){
+		for(var col = 0; col < board.grid[0].length; col++){
 			//Create unit (if any)
 			var curUnit = board.grid[row][col];
-			var curTile = tiles[row][col];
 
 			if(curUnit){
-				var unitDisp = document.createElement("DIV");
-				unitDisp.className = "unit";
-				unitDisp.appendChild(curUnit.sprite);
-
-				if(curUnit.owner == 1){
-					unitDisp.className += " player_1";
-				}else{
-					unitDisp.className += " player_2";
-				}
-				curUnit.displayElement = unitDisp;
-				board.displayDest.appendChild(unitDisp);
-
-				//Align Unit height and width with tile center.
-				unitDisp.style.bottom = parseFloat(curTile.style.bottom)+(parseFloat(curTile.style.height)/2)-((unitDisp.offsetHeight/2)/(unitDisp.parentNode.offsetHeight)*100)+"%";
-				unitDisp.style.left = parseFloat(curTile.style.left)+(parseFloat(curTile.style.width)/2)-((unitDisp.offsetWidth/2)/(unitDisp.parentNode.offsetWidth)*100)+"%";
-
-				//Bind Movement Functions
-				if(window.game.turn == curUnit.owner && window.game.activeBoard == curUnit.board.boardId){
-					curTile.onclick = curUnit.movementPath.bind(curUnit);
-				}
-				curTile.className += " occupied";
+				this.setupUnitDisplay(curUnit);
 			}
 		}
 	}
 };
+
+//Sets up the unit's display at the given tile.
+Viewer.prototype.setupUnitDisplay = function(unit){
+
+	//Get the board tile corresponding to the unit's position.
+	var unitRow = unit.position[0];
+	var unitCol = unit.position[1];
+	var unitTile = this.tiles[unit.board.boardId][unitRow][unitCol];
+
+	//Create DOM Element.
+	var unitDisp = document.createElement("DIV");
+	unitDisp.className = "unit";
+	unitDisp.appendChild(unit.sprite);
+
+	if(unit.owner == 1){
+		unitDisp.className += " player_1";
+	}else{
+		unitDisp.className += " player_2";
+	}
+	unit.displayElement = unitDisp;
+	unit.board.displayDest.appendChild(unitDisp);
+
+	//Align Unit height and width with tile center.
+	unitDisp.style.bottom = parseFloat(unitTile.style.bottom)+(parseFloat(unitTile.style.height)/2)-((unitDisp.offsetHeight/2)/(unitDisp.parentNode.offsetHeight)*100)+"%";
+	unitDisp.style.left = parseFloat(unitTile.style.left)+(parseFloat(unitTile.style.width)/2)-((unitDisp.offsetWidth/2)/(unitDisp.parentNode.offsetWidth)*100)+"%";
+	this.updateAura(unit);
+
+	//Bind Movement Functions
+	if(window.game.turn == unit.owner && window.game.activeBoard == unit.board.boardId){
+		unitTile.onclick = unit.movementPath.bind(unit);
+	}
+	unitTile.className += " occupied";
+}
 
 
 //Coordinates is an array of two elements [x,y] the desired grid coordinates.
@@ -208,11 +219,28 @@ Viewer.prototype.displayGameOver = function(winner){
 	turnDisplay.appendChild(winnerName);
 };
 
-//Make unit glow if it can warp.
+//Make the unit glow if it can warp, remove glow otherwise.
 Viewer.prototype.updateAura = function(unit){
 	if(unit.experience >= 2){
 		unit.displayElement.className += " canWarp";
 	}else{
 		unit.displayElement.className = unit.displayElement.className.replace(/(?:^|\s)canWarp(?!\S)/g,'');
 	}
+}
+
+//Opens the promotion menu for the given unit at the given coordinates.
+Viewer.prototype.promotionMenu = function(unit){
+	var menu = document.getElementById("context_menu");
+	var promoteButton = document.getElementById("promote_button");
+
+	//Clicking the button will promote the unit to the selected new station
+	//and will advance the turn.
+	promoteButton.onclick = function(){
+		var promotion = document.getElementById("promotion_select").value;
+		unit.promote(promotion);
+		document.getElementById("context_menu").style.display = "none";
+		window.game.nextTurn();
+	};
+
+	menu.style.display = "block";
 }
