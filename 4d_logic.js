@@ -139,9 +139,9 @@ function populate(){
 		//Get the corresponding black unit.
 		var bUnit = null;
 
-		if(i == 3){
+		if(i == 4){
 			bUnit = new King(2,this,blackRow,i);
-		}else if(i == 4){
+		}else if(i == 3){
 			bUnit = new Queen(2,this,blackRow,i);
 		}else{
 			bUnit = new wUnit.constructor(2,this,blackRow,i);

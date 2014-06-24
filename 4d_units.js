@@ -192,7 +192,7 @@ Unit.prototype.warp = function(target){
 Unit.prototype.promote = function(promotion){
 	
 	//Acceptable unit names for safety (since we're calling a function based on the value).
-	var unitNames = ["King","Queen","Bishop","Knight","Rook"];
+	var unitNames = ["","King","Queen","Bishop","Knight","Rook"];
 	if(unitNames.indexOf(promotion)){
 
 		//Create new unit and transfer attributes.

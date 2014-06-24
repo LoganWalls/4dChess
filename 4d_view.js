@@ -232,6 +232,13 @@ Viewer.prototype.updateAura = function(unit){
 Viewer.prototype.promotionMenu = function(unit){
 	var menu = document.getElementById("context_menu");
 	var promoteButton = document.getElementById("promote_button");
+	var boardId = unit.board.boardId;
+	//Unbind all movement functions:
+	for(var row = 0; row < this.tiles[boardId].length; row++){
+		for(var col = 0; col < this.tiles[boardId][row].length; col++){
+			this.tiles[boardId][row][col].onclick = null;
+		}
+	}
 
 	//Clicking the button will promote the unit to the selected new station
 	//and will advance the turn.
@@ -242,5 +249,5 @@ Viewer.prototype.promotionMenu = function(unit){
 		window.game.nextTurn();
 	};
 
-	menu.style.display = "block";
+	menu.style.display = "inline-block";
 }
