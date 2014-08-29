@@ -83,7 +83,10 @@ Unit.prototype.movementPath = movementPath;
 
 //Takes a unit, colors the posibile movement tiles for that unit
 //and binds the appropriate movement functions to each tile.
-function movementPath(){
+function movementPath(mode){
+
+	//All possible movement tiles.
+	var possibleTiles = new Array();
 
 	//Dimensions of the board grid.
 	var gridW = this.board.grid.length;
@@ -113,7 +116,8 @@ function movementPath(){
 				if(curTile){
 					//If the unit is an enemy
 					if(curTile.owner != this.owner){
-						window.game.view.bindMovement(this,this.board.boardId,[curRow,curCol],this.move);
+						window.game.view.bindMovement(this,[this.board.boardId,[curRow, curCol]], this.move);
+						possibleTiles.push([this.board.boardId,[curRow, curCol]]);
 						break;
 
 					//If unit is ally.
@@ -122,28 +126,61 @@ function movementPath(){
 					}
 				//If empty.
 				}else{
-					window.game.view.bindMovement(this,this.board.boardId,[curRow,curCol],this.move);
+					possibleTiles.push([this.board.boardId,[curRow, curCol]]);
 				}
 			}
 		}
 	}
-	//Binds command to jump between boards if the unit is able.
-	this.warpPath();
-	//Binds the command to cancel movement to the unit's current tile.
-	game.view.bindCancelCommand(this);
+	
+
+	if(mode == "play"){
+		window.game.view.bindPath(this, possibleTiles, this.move);
+		//Binds command to jump between boards if the unit is able.
+		this.warpPath("play");
+		//Binds the command to cancel movement to the unit's current tile.
+		game.view.bindCancelCommand(this);
+
+	}else if(mode == "predict"){
+		return possibleTiles;
+
+	}else{
+		console.log("Error: Invalid path mode: "+mode);
+	}
 }
 
-Unit.prototype.warpPath = function(){
+//If mode == play: binds the warp movement function on the board.
+//If mode == predict: returns the unit's warp target in the form: [board,[row,col]]
+//						returns empty array if cannot warp.
+Unit.prototype.warpPath = function(mode){
 	var destBoardId = null;
+	var canWarp = false;
+
 	if(this.experience >= 2){
-		if(this.board.boardId == 1){
-			destBoardId = 2;
-		}else if(this.board.boardId == 2){
+		canWarp = true;
+
+		if(this.board.boardId == 0){
 			destBoardId = 1;
+		}else if(this.board.boardId == 1){
+			destBoardId = 0;
 		}else{
 			throw("Error, Invalid destination board ID: "+destBoardId);
 		}
-		window.game.view.bindMovement(this, destBoardId, this.position, this.warp);
+	}
+
+	if(mode == "play"){
+		if(canWarp){
+			window.game.view.bindMovement(this, [destBoardId, this.position], this.warp);
+		}
+
+	}else if(mode == "predict"){
+		if(canWarp){
+			return ([destBoardId, this.position]);
+		}else{
+			return new Array();
+		}
+
+	}else{
+		console.log("Error: Invalid path mode: "+mode);
 	}
 };
 
@@ -153,9 +190,9 @@ Unit.prototype.move = function(target){
 	var tiles = window.game.view.tiles[this.board.boardId];
 	var destTile = tiles[target[0]][target[1]];
 
-	//Align Unit height and width with tile center.
-	unitDisp = this.displayElement;
 	this.board.moveUnit(this,target);
+	//Align Unit height and width with tile center.
+	var unitDisp = this.displayElement;
 	unitDisp.style.bottom = parseFloat(destTile.style.bottom)+(parseFloat(destTile.style.height)/2)-((unitDisp.offsetHeight/2)/(unitDisp.parentNode.offsetHeight)*100)+"%";
 	unitDisp.style.left = parseFloat(destTile.style.left)+(parseFloat(destTile.style.width)/2)-((unitDisp.offsetWidth/2)/(unitDisp.parentNode.offsetWidth)*100)+"%";
 };
@@ -164,21 +201,21 @@ Unit.prototype.warp = function(target){
 
 	var destBoardId = null;
 	if(this.experience >= 2){
-		if(this.board.boardId == 1){
-			destBoardId = 2;
-		}else if(this.board.boardId == 2){
+		if(this.board.boardId == 0){
 			destBoardId = 1;
+		}else if(this.board.boardId == 1){
+			destBoardId = 0;
 		}else{
 			throw("Error, Invalid destination board: "+destBoardId);
 		}
 		this.board.grid[this.position[0]][this.position[1]] = '';
 		console.log("New Board = "+destBoardId);
-		this.board = window.game.boards[destBoardId-1];
+		this.board = window.game.boards[destBoardId];
 		window.game.view.updateUnitBoard(this);
 		var tiles = window.game.view.tiles[destBoardId];
 		var destTile = tiles[this.position[0]][this.position[1]];
 
-    unitDisp = this.displayElement;
+      var unitDisp = this.displayElement;
 	  unitDisp.style.bottom = parseFloat(destTile.style.bottom)+(parseFloat(destTile.style.height)/2)-((unitDisp.offsetHeight/2)/(unitDisp.parentNode.offsetHeight)*100)+"%";
 	  unitDisp.style.left = parseFloat(destTile.style.left)+(parseFloat(destTile.style.width)/2)-((unitDisp.offsetWidth/2)/(unitDisp.parentNode.offsetWidth)*100)+"%";
 
@@ -264,7 +301,10 @@ function Knight(owner, board, row, col){
 	this.mobility = [1,0,1,0,1,0,1,0];
 }
 
-Knight.prototype.movementPath = function(){
+Knight.prototype.movementPath = function(mode){
+
+	//All possible movement tiles.
+	var possibleTiles = new Array();
 
 	//Dimensions of the board grid.
 	var gridW = this.board.grid.length;
@@ -318,7 +358,7 @@ Knight.prototype.movementPath = function(){
 				if(orthTile){
 					//If the unit is an enemy
 					if(orthTile.owner != this.owner){
-						window.game.view.bindMovement(this,this.board.boardId,[orthRow,orthCol],this.move);
+						possibleTiles.push([this.board.boardId, [orthRow,orthCol]]);
 
 					//If unit is ally.
 					}else{
@@ -326,13 +366,25 @@ Knight.prototype.movementPath = function(){
 					}
 				//If empty.
 				}else{
-					window.game.view.bindMovement(this,this.board.boardId,[orthRow,orthCol],this.move);
+					possibleTiles.push([this.board.boardId, [orthRow,orthCol]]);
 				}
 			}
 		}
 	}
-	this.warpPath();
-	game.view.bindCancelCommand(this);
+	
+	
+	if(mode == "play"){
+		window.game.view.bindPath(this, possibleTiles, this.move);
+		game.view.bindCancelCommand(this);
+		this.warpPath("play");
+
+	}else if(mode == "predict"){
+
+		return possibleTiles;
+
+	}else{
+		console.log("Error: Invalid path mode: "+mode);
+	}
 };
 
 Rook.prototype = new Unit();
@@ -361,7 +413,10 @@ function Pawn(owner, board, row, col){
 	//If firstMove, speed = 2. If enemy is diagonal, pawn can attack.
 }
 
-Pawn.prototype.movementPath = function(){
+Pawn.prototype.movementPath = function(mode){
+	//All possible movement tiles.
+	var possibleTiles = new Array();
+
 	//Dimensions of the board grid.
 	var gridW = this.board.grid.length;
 	var gridH = this.board.grid[0].length;
@@ -393,7 +448,7 @@ Pawn.prototype.movementPath = function(){
 				break;
 			//If empty.
 			}else{
-				window.game.view.bindMovement(this,this.board.boardId,[curRow,curCol],this.move);
+				possibleTiles.push([this.board.boardId, [curRow, curCol]]);
 			}
 		}
 	}
@@ -421,11 +476,22 @@ Pawn.prototype.movementPath = function(){
 			if(curTile){
 				//If the unit is an enemy
 				if(curTile.owner != this.owner){
-					window.game.view.bindMovement(this,this.board.boardId,[curRow,curCol],this.move);
+					possibleTiles.push([this.board.boardId, [curRow, curCol]]);
 				}
 			}
 		}
 	}
-	this.warpPath();
-	game.view.bindCancelCommand(this);
+	
+
+	if(mode == "play"){
+		window.game.view.bindPath(this, possibleTiles, this.move);
+		game.view.bindCancelCommand(this);
+		this.warpPath("play");
+		
+	}else if(mode == "predict"){
+		return possibleTiles;
+
+	}else{
+		console.log("Error: Invalid path mode: "+mode);
+	}
 };

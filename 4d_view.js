@@ -90,7 +90,7 @@ Viewer.prototype.setupUnitDisplay = function(unit){
 
 	//Bind Movement Functions
 	if(window.game.turn == unit.owner && window.game.activeBoard == unit.board.boardId){
-		unitTile.onclick = unit.movementPath.bind(unit);
+		unitTile.onclick = unit.movementPath.bind(unit,"play");
 	}
 	unitTile.className += " occupied";
 }
@@ -115,17 +115,21 @@ Viewer.prototype.gridToPix = function (coordinates){
 //Takes a unit to be moved and a target destination (as an array [row, column]).
 //Binds movement to a given target destnation.
 //Unit is the unit to be moved.
+//boardId is the id of the destination board.
 //Target is a 2 element array of the row and column of the target tile for the movement.
 //moveFunc is the function to handle the movement.
-Viewer.prototype.bindMovement = function (unit, boardId, target, moveFunc){
+Viewer.prototype.bindMovement = function (unit, move, moveFunc){
+	
+	////Unpack move
+	var boardId = move[0];
+	var target  = move[1];
 
-	var tiles = this.tiles[boardId];
-
-	//Unit's position stored as [row, col]
 	var targetRow = target[0];
 	var targetCol = target[1];
 
+
 	//The DOM element for the destination tile.
+	var tiles = this.tiles[boardId];
 	var destTile = tiles[targetRow][targetCol];
 	destTile.className += " movementTile";
 
@@ -133,6 +137,15 @@ Viewer.prototype.bindMovement = function (unit, boardId, target, moveFunc){
 		moveFunc.bind(unit)(target);
 	};
 };
+
+
+//Applies bindMovement to a list of tiles. Replace with map function?
+Viewer.prototype.bindPath = function (unit, moves, moveFunc){
+
+	for(var i = 0; i < moves.length; i++){
+		this.bindMovement(unit, moves[i], moveFunc);
+	}
+}
 
 //Resets and updates the controls on all tiles for the given board.
 //(Based on the current turn and active board for the game.)
@@ -155,7 +168,8 @@ Viewer.prototype.updateBindings = function (board){
 				var unit = board.grid[row][col];
 
 				if(window.game.turn == unit.owner && window.game.activeBoard == unit.board.boardId){
-					cur.onclick = unit.movementPath.bind(unit);
+					cur.onclick = unit.movementPath.bind(unit,"play");
+					
 				}
 				cur.className += " occupied";
 			}

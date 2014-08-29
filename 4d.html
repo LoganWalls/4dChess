@@ -10,6 +10,7 @@
    <script src="4d_view.js"></script>
    <script src="4d_units.js"></script>
   	<script src="4d_logic.js"></script>
+    <script src="4d_ai.js"></script>
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <title>4D Chess</title>
   </head>
@@ -22,7 +23,6 @@
         <p>
           <h2>The rules are as follows:</h2>
           <ol>
-            <li>This is a two player game.</li>
             <li>You will play on both boards simultaneously.</li>
             <li>There is no 'check' warning, be vigilant.</li>
             <li>If you lose <em>either</em> king you lose the game.</li>
@@ -50,8 +50,8 @@
         </select>
         <button id="promote_button">Promote</button>
       </div>
-    	<div id="board_1" class="boardDisplay"></div>
-      <div id="board_2" class="boardDisplay"></div>
+    	<div id="board_0" class="boardDisplay"></div>
+      <div id="board_1" class="boardDisplay"></div>
       <div id="turn_display"></div>
     </div>
 

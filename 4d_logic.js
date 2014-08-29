@@ -2,7 +2,7 @@ window.onload = function(){
   //Initial Game Setup
   var disp = document.getElementById("game_area");
   window.game = new Game(disp);
-  window.game.gameSetup(2);
+  window.game.gameSetup();
 };
 
 //Game object to encapsulate the game state.
@@ -11,7 +11,7 @@ function Game(disp){
 	this.turn = null;
 
 	//Controls which board a move can be made on.
-	this.activeBoardIndex = null;
+	this.activeBoard = null;
 
 	//Holds the game boards.
 	this.boards = new Array();
@@ -31,16 +31,18 @@ Game.prototype.gameOver = function(winner){
 //Advances the game turn.
 Game.prototype.nextTurn = function(){
 
-	if(this.activeBoard == 1){
-		this.activeBoard = 2;
+	if(this.activeBoard == 0){
+		this.activeBoard = 1;
+		this.otherBoard = 0;
 
-	}else if(this.activeBoard == 2){
+	}else if(this.activeBoard == 1){
 		if(this.turn == 1){
 			this.turn = 2;
 		}else if(this.turn == 2){
 			this.turn = 1;
 		}
-		this.activeBoard = 1;
+		this.activeBoard = 0;
+		this.otherBoard = 1;
 
 	}else{
 		throw("Error, invalid active board: "+this.activeBoard);
@@ -50,20 +52,26 @@ Game.prototype.nextTurn = function(){
 	for(var i = 0; i < this.boards.length; i++){
 			this.view.updateBindings(this.boards[i]);
 		}
-	window.setTimeout(function(){window.game.view.updateTurn();}, 800);
+	window.setTimeout(function(){
+		window.game.view.updateTurn();
+		if(window.game.turn == 2){
+			window.game.ai.decideNew();
+		}
+	}, 800);
 };
 
-//Setsup a new game with the given number of boards.
-Game.prototype.gameSetup = function (boards){
+//Sets up a new game.
+Game.prototype.gameSetup = function (){
 
 	this.turn = 1;
-	this.activeBoard = 1;
+	this.activeBoard = 0;
 	this.view = new Viewer();
+	this.ai = new AI(2, 1);
 	//
 
-	for(var i = 0; i < boards; i++){
-		var disp = document.getElementById("board_"+(i+1));
-		var b = new Board(disp, i+1);
+	for(var i = 0; i < 2; i++){
+		var disp = document.getElementById("board_"+(i));
+		var b = new Board(disp, i);
 		b.populate();
 		this.boards[i] = b;
 		this.view.initializeBoard(b);
